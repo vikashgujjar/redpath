@@ -1,43 +1,18 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Autoplay } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
+import { FaVenus, FaArrowRight, FaPhoneAlt } from 'react-icons/fa';
+import { Flask, Dna, BloodDrop } from './LabVectors';
+import useReveal from './useReveal';
+import { SectionHeader, SliderNav, SliderProgress, useSliderProgress } from './SectionKit';
+import { PackageCard } from './Healthpackage';
+import { PHONE } from './navConfig';
 
-import { FaHeart, FaLiver, FaUserMd } from 'react-icons/fa';
-import { GiLiver } from 'react-icons/gi';
-import {
-  MdBloodtype,
-  MdCoronavirus,
-  MdAdd,
-  MdAssignment,
-} from 'react-icons/md';
-
-const iconMap = {
-  Heart: <FaHeart className="text-red-500" />,
-  Liver: <GiLiver className="text-green-600" />,
-  Kidney: <FaUserMd className="text-blue-500" />,
-  'Diabetes (HbA1c)': <MdBloodtype className="text-pink-500" />,
-  Lipid: <FaUserMd className="text-purple-500" />,
-  Infection: <MdCoronavirus className="text-yellow-600" />,
-  '+2': <MdAdd className="text-gray-500" />,
-  Thyroid: <MdAssignment className="text-orange-500" />,
-  Vitamins: <FaUserMd className="text-teal-500" />,
-  'Diabetes / Sugar': <MdBloodtype className="text-pink-500" />,
-};
-
-const categories = [
-  'All',
-  'Pregnancy',
-  'Wellness',
-  'PCOS/PCOD',
-  'Sexual Health',
-  'Menstrual Health',
-  'Cancer',
-  'Infertility',
-];
+const categories = ['All', 'Pregnancy', 'Wellness', 'PCOS/PCOD', 'Sexual Health', 'Menstrual Health', 'Cancer', 'Infertility'];
 
 const packages = [
   {
@@ -48,161 +23,155 @@ const packages = [
     originalPrice: 8700,
     discountedPrice: 2499,
     vipPrice: 2249,
-    discount: '71%',
     category: 'All',
   },
   {
     title: 'Stay Fit Plus Full Body Checkup With Free RA Factor - Female',
     reportsIn: '10 hours',
     parameters: 3,
-    features: ['Thyroid', 'Kidney', 'Infection', 'Thyroid',],
+    features: ['Thyroid', 'Kidney', 'Infection'],
     originalPrice: 650,
     discountedPrice: 299,
     vipPrice: 269,
-    discount: '54%',
     category: 'Wellness',
   },
   {
     title: 'Stay Fit Plus Full Body Checkup With Free RA Factor - Female',
     reportsIn: '30 hours',
     parameters: 107,
-    features: ['Thyroid', 'Lipid', 'Vitamins' ,'Kidney', 'Infection', ],
+    features: ['Thyroid', 'Lipid', 'Vitamins', 'Kidney', 'Infection'],
     originalPrice: 13000,
     discountedPrice: 4499,
     vipPrice: 4049,
-    discount: '65%',
     category: 'Pregnancy',
   },
   {
     title: 'Stay Fit Plus Full Body Checkup With Free RA Factor - Female',
     reportsIn: '12 hours',
     parameters: 1,
-    features: ['Thyroid ' , 'Kidney', 'Infection', 'Lipid', ],
+    features: ['Thyroid', 'Kidney', 'Infection', 'Lipid'],
     originalPrice: 450,
     discountedPrice: 219,
     vipPrice: 197,
-    discount: '51%',
     category: 'Menstrual Health',
   },
 ];
 
+const inCategory = (tab) => (tab === 'All' ? packages : packages.filter((p) => p.category === tab));
+
 export default function Wellness() {
+  const sectionRef = useReveal();
+  const [progressRef, updateProgress] = useSliderProgress();
+  const [swiper, setSwiper] = useState(null);
   const [selectedTab, setSelectedTab] = useState('All');
 
-  const filteredPackages =
-    selectedTab === 'All'
-      ? packages
-      : packages.filter((pkg) => pkg.category === selectedTab);
+  const filtered = inCategory(selectedTab);
 
   return (
-    <div className="px-3 sm:px-6 py-8 max-w-7xl mx-auto bg-white rounded-2xl xl:mb-9 xl:px-0">
-      <div className="mb-5">
-        <h2 className="text-xl sm:text-3xl font-bold text-[#0a2540] mb-2">
-          Women's Health & Wellness
-        </h2>
-        <p className="text-sm text-gray-600">
-          Take control of your health with our comprehensive women's health packages
-        </p>
+    <section ref={sectionRef} className="rp-reveal relative overflow-hidden bg-linear-to-b from-white via-pink-50/60 to-white py-12 lg:py-16">
+      {/* backdrop */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute inset-0 opacity-[.05] bg-[radial-gradient(var(--color-accent-500)_1px,transparent_1px)] [background-size:18px_18px]" />
+        <div className="rp-drift absolute -right-24 top-6 h-72 w-96 rounded-full bg-pink-200/50 blur-3xl" />
+        <div className="rp-drift absolute -left-24 bottom-0 h-64 w-96 rounded-full bg-brand-100/60 blur-3xl" style={{ animationDelay: '-6s' }} />
+        <Dna className="rp-float-in absolute right-[5%] top-8 h-16 text-accent-500/15" style={{ '--r': '16deg', '--d': '.6s', '--dur': '9s' }} />
+        <BloodDrop className="rp-float-in absolute left-[44%] top-6 hidden w-8 text-accent-500/15 lg:block" style={{ '--r': '-10deg', '--d': '.8s' }} />
       </div>
 
-      {/* Scrollable Tabs */}
-      <div className="flex gap-2 mb-6 overflow-x-auto whitespace-nowrap scrollbar-none">
-        {categories.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setSelectedTab(tab)}
-            className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium border transition ${
-              selectedTab === tab
-                ? 'bg-[#0a2540] text-white'
-                : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+        <SectionHeader
+          eyebrow="Women's health"
+          icon={FaVenus}
+          title="Women's health &"
+          highlight="wellness"
+          description="Take control of your health with packages designed for every stage — from menstrual health to pregnancy."
+        >
+          <SliderNav swiper={swiper} />
+        </SectionHeader>
 
-      {/* Swiper Carousel */}
-      <Swiper
-        modules={[Navigation, Autoplay]}
-        spaceBetween={16}
-        slidesPerView={1}
-        autoplay={{
-          delay: 3500,
-          disableOnInteraction: false,
-        }}
-        breakpoints={{
-          640: { slidesPerView: 1 },
-          768: { slidesPerView: 2.2 },
-          1024: { slidesPerView: 3 },
-          1280: { slidesPerView: 3.5 },
-        }}
-        className="h-full"
-      >
-        {filteredPackages.map((pkg, idx) => (
-          <SwiperSlide key={idx} className="h-full">
-            <div className="flex flex-col h-full bg-white shadow-sm border border-gray-200 xl:rounded-2xl transition hover:shadow-md">
-              <div className="px-4 pt-4 flex-grow flex flex-col justify-between">
-                <div>
-                  <h3 className="text-[18px] font-semibold text-[#8b1ed0] leading-snug mb-3">
-                    {pkg.title}
-                  </h3>
+        {/* Category tabs */}
+        <div className="rp-slide-right mt-6 flex gap-2 overflow-x-auto pb-1 scrollbar-none" style={{ '--d': '.35s' }} role="tablist" aria-label="Women's health categories">
+          {categories.map((tab) => {
+            const on = tab === selectedTab;
+            const count = inCategory(tab).length;
+            return (
+              <button
+                key={tab}
+                role="tab"
+                aria-selected={on}
+                onClick={() => setSelectedTab(tab)}
+                className={`flex h-10 shrink-0 items-center gap-2 rounded-full px-4 text-sm font-semibold transition ${
+                  on
+                    ? 'bg-linear-to-r from-accent-500 to-brand-600 text-white'
+                    : 'border border-pink-100 bg-white text-gray-700 hover:border-accent-400 hover:text-accent-500'
+                }`}
+              >
+                {tab}
+                {count > 0 && (
+                  <span className={`rounded-full px-1.5 text-[11px] ${on ? 'bg-white/25' : 'bg-pink-50 text-accent-500'}`}>{count}</span>
+                )}
+              </button>
+            );
+          })}
+        </div>
 
-                  <div className="flex items-center text-[13px] text-gray-600 mb-3 flex-wrap gap-1">
-                    <span>Reports in</span>
-                    <span className="px-2 py-[2px] bg-gray-100 rounded text-black font-medium text-[12px]">
-                      {pkg.reportsIn}
-                    </span>
-                    <span className="mx-1">|</span>
-                    <span>Parameters</span>
-                    <span className="px-2 py-[2px] bg-gray-100 rounded text-black font-medium text-[12px]">
-                      {pkg.parameters}
-                    </span>
+        {filtered.length > 0 ? (
+          <>
+            <Swiper
+              key={selectedTab}
+              modules={[Autoplay]}
+              onSwiper={(s) => {
+                setSwiper(s);
+                updateProgress(s);
+              }}
+              onProgress={updateProgress}
+              onBreakpoint={updateProgress}
+              rewind
+              spaceBetween={16}
+              slidesPerView={1.1}
+              autoplay={{ delay: 3500, disableOnInteraction: false, pauseOnMouseEnter: true }}
+              breakpoints={{
+                560: { slidesPerView: 1.6, spaceBetween: 18 },
+                768: { slidesPerView: 2.2, spaceBetween: 20 },
+                1024: { slidesPerView: 3, spaceBetween: 22 },
+                1280: { slidesPerView: 3.5, spaceBetween: 24 },
+                1536: { slidesPerView: 4.2, spaceBetween: 24 },
+              }}
+              className="mt-6"
+              style={{ overflow: 'visible', paddingBlock: 12 }}
+            >
+              {filtered.map((pkg, i) => (
+                <SwiperSlide key={`${pkg.category}-${pkg.discountedPrice}`} style={{ height: 'auto' }}>
+                  <div className="rp-blur-in h-full" style={{ '--d': `${0.3 + Math.min(i, 4) * 0.1}s` }}>
+                    <PackageCard pkg={pkg} delay={`${0.6 + Math.min(i, 4) * 0.1}s`} />
                   </div>
-
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {pkg.features.map((feature, i) => (
-                      <div
-                        key={i}
-                        className="flex items-center text-xs bg-gray-100 px-3 py-[6px] rounded-full text-gray-800 gap-1"
-                      >
-                        <span className="text-sm">{iconMap[feature]}</span>
-                        <span>{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className="px-4 pt-3 pb-4 border-t border-gray-200 bg-[#fff4fe] rounded-b-2xl">
-                <p className="text-xs text-[#8b1ed0] font-medium mb-1">
-                  Limited Time Deal
-                </p>
-
-                <div className="flex items-center space-x-2 text-gray-800 mb-1">
-                  <span className="text-xl font-bold text-black">
-                    ₹{pkg.discountedPrice}
-                  </span>
-                  <span className="line-through text-gray-400 text-sm">
-                    ₹{pkg.originalPrice}
-                  </span>
-                  <span className="text-[#1dbf73] font-semibold text-sm">
-                    {pkg.discount} Off
-                  </span>
-                </div>
-
-                <div className="text-xs text-gray-600 mb-3">
-                  <span className="font-medium">VIP Price:</span> ₹{pkg.vipPrice}
-                </div>
-
-                <button className="w-full bg-[#8b1ed0] hover:bg-[#8b1ed0] text-white text-sm font-semibold py-2.5 rounded-full shadow">
-                  Book Now
-                </button>
-              </div>
+                </SwiperSlide>
+              ))}
+            </Swiper>
+            <SliderProgress progressRef={progressRef} label={`${filtered.length} ${filtered.length === 1 ? 'package' : 'packages'}`} />
+          </>
+        ) : (
+          <div className="rp-drop-in mt-8 flex flex-col items-center rounded-3xl border border-dashed border-pink-200 bg-white/70 px-6 py-12 text-center">
+            <Flask className="h-12 w-12 text-accent-400" />
+            <p className="mt-3 text-lg font-bold text-gray-900">{selectedTab} packages are coming soon</p>
+            <p className="mt-1 max-w-md text-sm text-gray-500">Our health advisor can recommend the right tests for you today.</p>
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              <a
+                href={`tel:${PHONE.tel}`}
+                className="flex h-11 items-center gap-2 rounded-full bg-linear-to-r from-accent-500 to-brand-600 px-5 text-sm font-semibold text-white"
+              >
+                <FaPhoneAlt className="text-xs" /> Talk to an advisor
+              </a>
+              <Link
+                href="/fullbody"
+                className="flex h-11 items-center gap-2 rounded-full border border-pink-200 bg-white px-5 text-sm font-semibold text-gray-700 transition hover:border-accent-400"
+              >
+                Browse all <FaArrowRight className="text-xs" />
+              </Link>
             </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

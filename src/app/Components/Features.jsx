@@ -1,73 +1,66 @@
 'use client';
 
-import {
-  FaUserCheck,
-  FaVial,
-  FaMapMarkedAlt,
-  FaMap,
-  FaFlask,
-  FaUserNurse,
-} from 'react-icons/fa';
+import { FaUserCheck, FaVial, FaMapMarkedAlt, FaMap, FaFlask, FaUserNurse, FaChartLine } from 'react-icons/fa';
+import { Flask, Microscope, Dna, ecgPath } from './LabVectors';
+import useReveal from './useReveal';
+import { SectionHeader, CountUp } from './SectionKit';
 
+// PLACEHOLDER FIGURES — these were carried over from the previous design (copied from another lab's site).
+// Replace with Redpath's real numbers before going live.
 const stats = [
-  {
-    icon: <FaUserCheck className="text-3xl text-black" />,
-    count: '70,00,000+',
-    label: 'Customers served',
-  },
-  {
-    icon: <FaVial className="text-3xl text-black" />,
-    count: '70,000+',
-    label: 'Tests Processed',
-  },
-  {
-    icon: <FaMapMarkedAlt className="text-3xl text-black" />,
-    count: '220+',
-    label: 'Cities',
-  },
-  {
-    icon: <FaMap className="text-3xl text-black" />,
-    count: '2000+',
-    label: 'Collection Centres',
-  },
-  {
-    icon: <FaFlask className="text-3xl text-black" />,
-    count: '80+',
-    label: 'World Class In-house Labs',
-  },
-  {
-    icon: <FaUserNurse className="text-3xl text-black" />,
-    count: '1000+',
-    label: 'Home Collection Experts',
-  },
+  { icon: FaUserCheck, value: 7000000, suffix: '+', label: 'Customers served' },
+  { icon: FaVial, value: 70000, suffix: '+', label: 'Tests processed' },
+  { icon: FaMapMarkedAlt, value: 220, suffix: '+', label: 'Cities' },
+  { icon: FaMap, value: 2000, suffix: '+', label: 'Collection centres' },
+  { icon: FaFlask, value: 80, suffix: '+', label: 'In-house labs' },
+  { icon: FaUserNurse, value: 1000, suffix: '+', label: 'Home collection experts' },
 ];
 
-export default function RedcliffeStats() {
-  return (
-    <section className="bg-gray-100 py-10 rounded-xl xl:mb-9">
-      <div className="max-w-7xl mx-auto px-4 xl:px-0">
-        <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
-          Redcliffe Labs -{' '}
-          <span className="text-[#8b1ed0] font-bold">
-            Healthy India ki Trusted Lab
-          </span>
-        </h2>
-        <p className="mt-2 text-gray-700 font-medium">
-          At Redcliffe Labs, we have a <strong>single goal</strong>: to give India its right to quality diagnostics.
-        </p>
+export default function RedpathStats() {
+  const sectionRef = useReveal();
+  const ecg = ecgPath(1200, 240);
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-5 mt-8">
-          {stats.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-xl p-5 text-center border border-red-200 shadow-sm hover:shadow-md transition"
-            >
-              <div className="mb-2">{item.icon}</div>
-              <div className="w-full border-t border-dotted border-gray-300 my-2" />
-              <div className="text-lg font-bold text-[#8b1ed0] text-justify">{item.count}</div>
-              <div className="text-sm text-gray-700 mt-1 text-justify">{item.label}</div>
-            </div>
-          ))}
+  return (
+    <section ref={sectionRef} className="rp-reveal relative bg-white py-12 lg:py-16">
+      <div className="relative w-full px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16">
+        <SectionHeader
+          eyebrow="Our impact"
+          icon={FaChartLine}
+          title="Redpath —"
+          highlight="defining health through accuracy"
+          description="We have a single goal: to give everyone access to quality diagnostics they can trust."
+        />
+
+        <div className="rp-blur-in relative mt-10 overflow-hidden rounded-[32px] bg-linear-to-br from-brand-700 via-brand-600 to-accent-500 px-4 py-8 text-white sm:px-8 lg:py-10" style={{ '--d': '.25s' }}>
+          {/* backdrop */}
+          <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+            <div className="absolute inset-0 opacity-[.12] bg-[radial-gradient(white_1px,transparent_1px)] [background-size:16px_16px]" />
+            <svg className="absolute left-0 top-1/2 h-16 w-full -translate-y-1/2" viewBox="0 0 1200 40" preserveAspectRatio="none">
+              <path d={ecg} pathLength="1000" fill="none" stroke="white" strokeOpacity=".12" strokeWidth="2" vectorEffect="non-scaling-stroke" className="rp-draw" style={{ '--d': '.4s' }} />
+              <path d={ecg} pathLength="1000" fill="none" stroke="white" strokeOpacity=".8" strokeWidth="2.5" strokeLinecap="round" vectorEffect="non-scaling-stroke" className="rp-run" style={{ '--d': '2s' }} />
+            </svg>
+            <Flask className="rp-float-in absolute -left-2 -top-2 w-20 text-white/10" style={{ '--r': '-14deg', '--d': '.6s' }} />
+            <Microscope className="rp-float-in absolute -bottom-2 right-4 w-20 text-white/10" style={{ '--r': '6deg', '--d': '.8s', '--dur': '9s' }} />
+            <Dna className="rp-float-in absolute left-1/2 -top-4 hidden h-20 text-white/10 lg:block" style={{ '--r': '20deg', '--d': '1s', '--dur': '10s' }} />
+          </div>
+
+          <ul className="relative grid grid-cols-2 gap-y-8 sm:grid-cols-3 xl:grid-cols-6">
+            {stats.map(({ icon: Icon, value, suffix, label }, i) => (
+              <li
+                key={label}
+                className={`rp-slide-right group flex flex-col items-center px-3 text-center xl:border-white/20 ${i > 0 ? 'xl:border-l' : ''}`}
+                style={{ '--d': `${0.45 + i * 0.08}s` }}
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 text-lg ring-1 ring-white/25 transition duration-500 group-hover:-translate-y-1 group-hover:rotate-[-8deg] group-hover:bg-white group-hover:text-brand-600">
+                  <Icon />
+                </span>
+                <span className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">
+                  <CountUp value={value} suffix={suffix} />
+                </span>
+                <span className="mt-1 text-sm text-white/75">{label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>
